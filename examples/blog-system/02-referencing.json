@@ -1,0 +1,82 @@
+{
+  "description": "Способ 2: Нормализованные ссылки (Referencing)",
+  "method": "referencing",
+  "advantages": [
+    "Нет дублирования данных",
+    "Легкое обновление отдельных сущностей",
+    "Нет ограничений на количество связанных документов"
+  ],
+  "disadvantages": [
+    "Множественные запросы для получения данных",
+    "Нужны $lookup для JOIN операций",
+    "Медленнее при чтении"
+  ],
+  "structure": {
+    "users": [
+      {
+        "_id": 1,
+        "username": "alice",
+        "email": "alice@example.com",
+        "created_at": "2024-01-15T10:00:00Z"
+      },
+      {
+        "_id": 2,
+        "username": "bob",
+        "email": "bob@example.com",
+        "created_at": "2024-01-16T11:00:00Z"
+      },
+      {
+        "_id": 3,
+        "username": "charlie",
+        "email": "charlie@example.com",
+        "created_at": "2024-01-17T12:00:00Z"
+      }
+    ],
+    "posts": [
+      {
+        "_id": 101,
+        "author_id": 1,
+        "title": "Первый пост о MongoDB",
+        "content": "MongoDB - документоориентированная СУБД...",
+        "created_at": "2024-01-20T14:30:00Z",
+        "tag_ids": [1, 2, 3]
+      },
+      {
+        "_id": 102,
+        "author_id": 1,
+        "title": "Второй пост о схемах",
+        "content": "Проектирование схем данных...",
+        "created_at": "2024-01-25T09:00:00Z",
+        "tag_ids": [4, 5]
+      }
+    ],
+    "comments": [
+      {
+        "_id": 1001,
+        "post_id": 101,
+        "author_id": 2,
+        "text": "Отличная статья!",
+        "created_at": "2024-01-20T15:00:00Z"
+      },
+      {
+        "_id": 1002,
+        "post_id": 101,
+        "author_id": 3,
+        "text": "Очень полезно, спасибо!",
+        "created_at": "2024-01-20T16:00:00Z"
+      }
+    ],
+    "tags": [
+      { "_id": 1, "name": "mongodb" },
+      { "_id": 2, "name": "nosql" },
+      { "_id": 3, "name": "database" },
+      { "_id": 4, "name": "schema" },
+      { "_id": 5, "name": "design" }
+    ]
+  },
+  "use_cases": [
+    "Данные часто обновляются независимо",
+    "Большое количество связанных документов",
+    "Нужна гибкость в запросах"
+  ]
+}

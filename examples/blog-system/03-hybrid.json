@@ -1,0 +1,116 @@
+{
+  "description": "Способ 3: Гибридный подход (Hybrid)",
+  "method": "hybrid",
+  "advantages": [
+    "Баланс между производительностью чтения и записи",
+    "Частичная денормализация критичных данных",
+    "Гибкость в выборе стратегии для каждого отношения"
+  ],
+  "disadvantages": [
+    "Сложность поддержания консистентности",
+    "Необходимость синхронизации денормализованных данных",
+    "Более сложная логика приложения"
+  ],
+  "structure": {
+    "users": [
+      {
+        "_id": 1,
+        "username": "alice",
+        "email": "alice@example.com",
+        "created_at": "2024-01-15T10:00:00Z",
+        "stats": {
+          "posts_count": 2,
+          "comments_count": 0
+        }
+      },
+      {
+        "_id": 2,
+        "username": "bob",
+        "email": "bob@example.com",
+        "created_at": "2024-01-16T11:00:00Z",
+        "stats": {
+          "posts_count": 0,
+          "comments_count": 1
+        }
+      }
+    ],
+    "posts": [
+      {
+        "_id": 101,
+        "author": {
+          "_id": 1,
+          "username": "alice"
+        },
+        "title": "Первый пост о MongoDB",
+        "content": "MongoDB - документоориентированная СУБД...",
+        "created_at": "2024-01-20T14:30:00Z",
+        "tags": ["mongodb", "nosql", "database"],
+        "comments_count": 2,
+        "recent_comments": [
+          {
+            "_id": 1002,
+            "author": {
+              "_id": 3,
+              "username": "charlie"
+            },
+            "text": "Очень полезно, спасибо!",
+            "created_at": "2024-01-20T16:00:00Z"
+          }
+        ]
+      },
+      {
+        "_id": 102,
+        "author": {
+          "_id": 1,
+          "username": "alice"
+        },
+        "title": "Второй пост о схемах",
+        "content": "Проектирование схем данных...",
+        "created_at": "2024-01-25T09:00:00Z",
+        "tags": ["schema", "design"],
+        "comments_count": 0,
+        "recent_comments": []
+      }
+    ],
+    "comments": [
+      {
+        "_id": 1001,
+        "post_id": 101,
+        "author": {
+          "_id": 2,
+          "username": "bob"
+        },
+        "text": "Отличная статья!",
+        "created_at": "2024-01-20T15:00:00Z"
+      },
+      {
+        "_id": 1002,
+        "post_id": 101,
+        "author": {
+          "_id": 3,
+          "username": "charlie"
+        },
+        "text": "Очень полезно, спасибо!",
+        "created_at": "2024-01-20T16:00:00Z"
+      }
+    ],
+    "tags": [
+      { "_id": 1, "name": "mongodb", "posts_count": 1 },
+      { "_id": 2, "name": "nosql", "posts_count": 1 },
+      { "_id": 3, "name": "database", "posts_count": 1 },
+      { "_id": 4, "name": "schema", "posts_count": 1 },
+      { "_id": 5, "name": "design", "posts_count": 1 }
+    ]
+  },
+  "design_decisions": {
+    "author_in_posts": "Встроен для быстрого отображения (частое чтение)",
+    "comments_separate": "Отдельная коллекция (частое добавление)",
+    "recent_comments_embedded": "Последний комментарий встроен (preview)",
+    "stats_denormalized": "Счётчики для быстрого доступа"
+  },
+  "use_cases": [
+    "Смешанные паттерны чтения/записи",
+    "Необходимость быстрого preview",
+    "Критичные данные нужны часто"
+  ]
+}
