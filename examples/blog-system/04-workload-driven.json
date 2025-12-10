@@ -1,0 +1,147 @@
+{
+  "description": "Способ 4: Денормализация с учётом рабочей нагрузки (Workload-driven)",
+  "method": "workload-driven",
+  "advantages": [
+    "Оптимизация под конкретные запросы",
+    "Максимальная производительность для критичных операций",
+    "Учёт частоты обновлений"
+  ],
+  "disadvantages": [
+    "Требует анализа workload",
+    "Сложность при изменении требований",
+    "Необходимость мониторинга и адаптации"
+  ],
+  "workload_analysis": {
+    "read_operations": {
+      "get_post_with_comments": {
+        "frequency": "very_high",
+        "priority": 1,
+        "optimization": "embed recent comments"
+      },
+      "get_user_posts": {
+        "frequency": "high",
+        "priority": 2,
+        "optimization": "index + reference"
+      },
+      "search_by_tag": {
+        "frequency": "medium",
+        "priority": 3,
+        "optimization": "tag index + embedded tags"
+      }
+    },
+    "write_operations": {
+      "add_comment": {
+        "frequency": "high",
+        "optimization": "separate collection"
+      },
+      "update_user": {
+        "frequency": "low",
+        "optimization": "can embed author snapshot"
+      },
+      "add_post": {
+        "frequency": "medium",
+        "optimization": "separate collection"
+      }
+    }
+  },
+  "structure": {
+    "users": [
+      {
+        "_id": 1,
+        "username": "alice",
+        "email": "alice@example.com",
+        "profile": {
+          "avatar_url": "/avatars/alice.jpg",
+          "bio": "Разработчик и блогер"
+        },
+        "created_at": "2024-01-15T10:00:00Z"
+      }
+    ],
+    "posts": [
+      {
+        "_id": 101,
+        "author_snapshot": {
+          "_id": 1,
+          "username": "alice",
+          "avatar_url": "/avatars/alice.jpg"
+        },
+        "title": "Первый пост о MongoDB",
+        "content": "MongoDB - документоориентированная СУБД...",
+        "created_at": "2024-01-20T14:30:00Z",
+        "updated_at": "2024-01-20T14:30:00Z",
+        "tags": ["mongodb", "nosql", "database"],
+        "metrics": {
+          "views": 1250,
+          "comments_count": 2,
+          "likes_count": 45
+        },
+        "recent_comments": [
+          {
+            "_id": 1002,
+            "author_snapshot": {
+              "_id": 3,
+              "username": "charlie"
+            },
+            "text": "Очень полезно, спасибо!",
+            "created_at": "2024-01-20T16:00:00Z"
+          },
+          {
+            "_id": 1001,
+            "author_snapshot": {
+              "_id": 2,
+              "username": "bob"
+            },
+            "text": "Отличная статья!",
+            "created_at": "2024-01-20T15:00:00Z"
+          }
+        ]
+      }
+    ],
+    "comments": [
+      {
+        "_id": 1001,
+        "post_id": 101,
+        "author_id": 2,
+        "author_snapshot": {
+          "username": "bob"
+        },
+        "text": "Отличная статья!",
+        "created_at": "2024-01-20T15:00:00Z"
+      },
+      {
+        "_id": 1002,
+        "post_id": 101,
+        "author_id": 3,
+        "author_snapshot": {
+          "username": "charlie"
+        },
+        "text": "Очень полезно, спасибо!",
+        "created_at": "2024-01-20T16:00:00Z"
+      }
+    ],
+    "tags_index": [
+      {
+        "_id": "mongodb",
+        "post_ids": [101],
+        "count": 1
+      },
+      {
+        "_id": "nosql",
+        "post_ids": [101],
+        "count": 1
+      }
+    ]
+  },
+  "indexes": [
+    { "collection": "posts", "field": "author_snapshot._id", "type": "single" },
+    { "collection": "posts", "field": "tags", "type": "multikey" },
+    { "collection": "posts", "field": "created_at", "type": "single", "order": -1 },
+    { "collection": "comments", "field": "post_id", "type": "single" },
+    { "collection": "comments", "field": "created_at", "type": "single", "order": -1 }
+  ],
+  "use_cases": [
+    "Высоконагруженные системы",
+    "Известные и стабильные паттерны запросов",
+    "Критичная производительность чтения"
+  ]
+}
